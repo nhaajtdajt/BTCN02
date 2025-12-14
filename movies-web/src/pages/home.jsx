@@ -13,9 +13,8 @@ export default function Body() {
     return (
         <main className={`w-[1200px] p-6 mt-1 min-h-[670px] transition-colors ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'
             }`}>
-
             <TopRevenueCarousel />
-
+            
         </main>
     )
 }
