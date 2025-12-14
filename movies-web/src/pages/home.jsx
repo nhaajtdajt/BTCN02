@@ -1,6 +1,9 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function Body() {
+    const { isDark } = useTheme();
+
     // Placeholder data - sẽ thay bằng API sau
     const featuredMovie = {
         title: "Sherlock Jr.",
@@ -20,11 +23,13 @@ export default function Body() {
     ];
 
     return (
-        <main className="w-[1200px] bg-white p-6 mt-1 min-h-[670px]">
+        <main className={`w-[1200px] p-6 mt-1 min-h-[670px] transition-colors ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'
+            }`}>
             {/* Featured Movie Banner */}
             <section className="mb-8">
                 <div className="relative flex justify-center items-center">
-                    <button className="absolute left-4 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg">
+                    <button className={`absolute left-4 z-10 rounded-full p-2 shadow-lg transition-colors ${isDark ? 'bg-gray-700/80 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'
+                        }`}>
                         <ChevronLeft size={32} />
                     </button>
 
@@ -36,7 +41,8 @@ export default function Body() {
                         />
                     </div>
 
-                    <button className="absolute right-4 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg">
+                    <button className={`absolute right-4 z-10 rounded-full p-2 shadow-lg transition-colors ${isDark ? 'bg-gray-700/80 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'
+                        }`}>
                         <ChevronRight size={32} />
                     </button>
                 </div>
@@ -46,7 +52,8 @@ export default function Body() {
             <section className="mb-8">
                 <h2 className="text-xl font-bold mb-4">Most Popular</h2>
                 <div className="relative">
-                    <button className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg">
+                    <button className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full p-2 shadow-lg transition-colors ${isDark ? 'bg-gray-700/80 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'
+                        }`}>
                         <ChevronLeft size={24} />
                     </button>
 
@@ -62,7 +69,8 @@ export default function Body() {
                         ))}
                     </div>
 
-                    <button className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg">
+                    <button className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full p-2 shadow-lg transition-colors ${isDark ? 'bg-gray-700/80 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'
+                        }`}>
                         <ChevronRight size={24} />
                     </button>
                 </div>
@@ -72,7 +80,8 @@ export default function Body() {
             <section className="mb-8">
                 <h2 className="text-xl font-bold mb-4">Top Rating</h2>
                 <div className="relative">
-                    <button className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg">
+                    <button className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full p-2 shadow-lg transition-colors ${isDark ? 'bg-gray-700/80 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'
+                        }`}>
                         <ChevronLeft size={24} />
                     </button>
 
@@ -88,7 +97,8 @@ export default function Body() {
                         ))}
                     </div>
 
-                    <button className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg">
+                    <button className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full p-2 shadow-lg transition-colors ${isDark ? 'bg-gray-700/80 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'
+                        }`}>
                         <ChevronRight size={24} />
                     </button>
                 </div>
