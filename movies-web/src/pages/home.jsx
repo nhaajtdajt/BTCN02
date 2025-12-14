@@ -4,11 +4,6 @@ import { useTheme } from '@/context/ThemeContext';
 export default function Body() {
     const { isDark } = useTheme();
 
-    // Placeholder data - sẽ thay bằng API sau
-    const featuredMovie = {
-        title: "Sherlock Jr.",
-        poster: "https://picsum.photos/300/450?random=1"
-    };
 
     const mostPopularMovies = [
         { id: 1, poster: "https://picsum.photos/280/400?random=2" },
@@ -21,11 +16,19 @@ export default function Body() {
         { id: 5, poster: "https://picsum.photos/280/400?random=6" },
         { id: 6, poster: "https://picsum.photos/280/400?random=7" }
     ];
+    
+    // Placeholder data - sẽ thay bằng API sau
+    const featuredMovie = {
+        title: "Sherlock Jr.",
+        poster: "https://picsum.photos/300/450?random=1"
+    };
+
+    
 
     return (
         <main className={`w-[1200px] p-6 mt-1 min-h-[670px] transition-colors ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'
             }`}>
-            {/* Featured Movie Banner */}
+
             <section className="mb-8">
                 <div className="relative flex justify-center items-center">
                     <button className={`absolute left-4 z-10 rounded-full p-2 shadow-lg transition-colors ${isDark ? 'bg-gray-700/80 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'
@@ -48,7 +51,6 @@ export default function Body() {
                 </div>
             </section>
 
-            {/* Most Popular Section */}
             <section className="mb-8">
                 <h2 className="text-xl font-bold mb-4">Most Popular</h2>
                 <div className="relative">
@@ -75,8 +77,6 @@ export default function Body() {
                     </button>
                 </div>
             </section>
-
-            {/* Top Rating Section */}
             <section className="mb-8">
                 <h2 className="text-xl font-bold mb-4">Top Rating</h2>
                 <div className="relative">
