@@ -4,7 +4,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { searchMovies } from '@/service/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Film } from 'lucide-react';
 
 export default function Search() {
     const [searchParams] = useSearchParams();
@@ -90,21 +90,35 @@ export default function Search() {
                             <Card
                                 key={movie.id}
                                 onClick={() => movie.id && navigate(`/movie/${movie.id}`)}
-                                className={`cursor-pointer transition hover:-translate-y-1 hover:shadow-lg overflow-hidden ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                                className={`cursor-pointer transition hover:-translate-y-1 hover:scale-110 transition-transform hover:shadow-lg overflow-hidden ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                                     }`}
                             >
                                 <AspectRatio ratio={2 / 3} className="w-full bg-gray-200">
                                     {movie.image ? (
-                                        <img src={movie.image} alt={movie.title} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-xs opacity-70">No image</div>
-                                    )}
+                                        <img
+                                            src={movie.image}
+                                            alt={movie.title}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = '';
+                                                e.currentTarget.style.display = 'none';
+
+                                                const placeholder = e.currentTarget.parentElement?.querySelector('.poster-fallback');
+                                                if (placeholder) placeholder.style.display = 'flex';
+                                            }}
+                                        />
+                                    ) : null}
+                                    <div className="poster-fallback w-full h-full hidden items-center justify-center text-gray-500">
+                                        <Film className="w-10 h-10" />
+                                    </div>
                                 </AspectRatio>
                                 <CardContent className="p-3">
-                                    <p className="font-semibold text-sm leading-tight line-clamp-2">{movie.title}</p>
+                                    <p className={`font-semibold text-sm leading-tight line-clamp-2 ${isDark ? 'text-white' : 'border-gray-200 bg-white'
+                                        }`}  >{movie.title}</p>
                                     <div className="flex items-center justify-between mt-1 text-xs opacity-70">
-                                        {movie.year && <span>{movie.year}</span>}
-                                        {movie.rate && <span className="flex items-center gap-1">⭐ {movie.rate}</span>}
+                                        {movie.year && <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{movie.year}</span>}
+                                        {movie.rate && <span className={`flex items-center gap-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>⭐ {movie.rate}</span>}
                                     </div>
                                     {movie.genres?.length > 0 && (
                                         <div className="flex flex-wrap gap-1 mt-2">
@@ -130,10 +144,10 @@ export default function Search() {
                             onClick={handlePrev}
                             disabled={currentPage === 1}
                             className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${currentPage === 1
-                                    ? 'opacity-40 cursor-not-allowed'
-                                    : isDark
-                                        ? 'bg-gray-800 hover:bg-gray-700'
-                                        : 'bg-white hover:bg-gray-100 border border-gray-300'
+                                ? 'opacity-40 cursor-not-allowed'
+                                : isDark
+                                    ? 'bg-gray-800 hover:bg-gray-700'
+                                    : 'bg-white hover:bg-gray-100 border border-gray-300'
                                 }`}
                         >
                             <ChevronLeft size={18} />
@@ -146,10 +160,10 @@ export default function Search() {
                             onClick={handleNext}
                             disabled={!hasMore}
                             className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${!hasMore
-                                    ? 'opacity-40 cursor-not-allowed'
-                                    : isDark
-                                        ? 'bg-gray-800 hover:bg-gray-700'
-                                        : 'bg-white hover:bg-gray-100 border border-gray-300'
+                                ? 'opacity-40 cursor-not-allowed'
+                                : isDark
+                                    ? 'bg-gray-800 hover:bg-gray-700'
+                                    : 'bg-white hover:bg-gray-100 border border-gray-300'
                                 }`}
                         >
                             Next
