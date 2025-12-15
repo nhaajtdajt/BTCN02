@@ -44,7 +44,7 @@ export default function TopRevenueCarousel() {
     };
 
     return (
-        <section className="mb-8 mt-10">
+        <section className="mb-8">
 
             <div className="relative">
                 <button
@@ -56,7 +56,7 @@ export default function TopRevenueCarousel() {
                 </button>
 
                 <div
-                    className={`flex justify-center gap-4 px-12 py-2 rounded transition-colors ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'
+                    className={`flex justify-center gap-4 px-12 py-8 rounded transition-colors ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'
                         }`}
                 >
                     {loading && (
@@ -75,18 +75,56 @@ export default function TopRevenueCarousel() {
                                 return (
                                     <article
                                         key={movie.id}
-                                        className={`w-[240px] overflow-hidden rounded shadow-md border transition-colors ${isDark
-                                                ? 'border-gray-700 bg-gray-900 hover:shadow-xl'
-                                                : 'border-gray-200 bg-white hover:shadow-xl'
+                                        className={`w-[280px] overflow-hidden rounded-lg shadow-lg border transition-all duration-300 transform hover:scale-110 hover:shadow-2xl cursor-pointer group ${isDark
+                                            ? 'border-gray-700 bg-gray-900'
+                                            : 'border-gray-300 bg-white'
                                             }`}
                                     >
-                                        <div className="h-auto bg-gray-200 flex items-center justify-center overflow-hidden">
+                                        {/* Poster Image */}
+                                        <div className="relative bg-gray-300 flex items-center justify-center overflow-hidden h-[380px]">
                                             <img
                                                 src={movie.image}
                                                 alt={movie.title}
-                                                className="w-full h-full object-contain"
-
+                                                className="w-full h-full object-cover"
                                             />
+
+                                            {/* Info overlay at bottom */}
+                                            <div className={`absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white`}>
+                                                <h3 className="font-bold text-sm line-clamp-2">{movie.title}</h3>
+                                                <p className="text-xs opacity-90 mt-1">{movie.year}</p>
+
+                                                {/* Genres */}
+                                                <div className="mt-2 flex flex-wrap gap-1">
+                                                    {movie.genres?.slice(0, 2).map((genre, idx) => (
+                                                        <span key={idx} className="text-xs bg-blue-600/80 px-2 py-0.5 rounded">
+                                                            {genre}
+                                                        </span>
+                                                    ))}
+                                                </div>
+
+                                                {/* Rating - Shows on hover */}
+                                                <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <span className="text-yellow-400 font-bold text-lg">★</span>
+                                                        <span className="font-bold text-lg text-yellow-300">
+                                                            {movie.rate ? movie.rate.toFixed(1) : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Pagination indicators at bottom inside poster */}
+                                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex justify-center items-center gap-1.5 z-20">
+                                                {movies.map((_, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className={`h-1.5 transition-all duration-300 rounded-full ${idx === index
+                                                                ? `w-6 ${isDark ? 'bg-blue-400' : 'bg-white'}`
+                                                                : `w-1.5 ${isDark ? 'bg-white/50' : 'bg-white/70'}`
+                                                            }`}
+                                                    />
+                                                ))}
+                                            </div>
                                         </div>
                                     </article>
                                 );
@@ -103,7 +141,6 @@ export default function TopRevenueCarousel() {
                     <ChevronRight size={24} />
                 </button>
             </div>
-            <div className="mt-2 text-xs opacity-70">Movie {movies.length ? index + 1 : 0} / {movies.length || 0}</div>
         </section>
     );
 }

@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import TopRevenueCarousel from '@/components/movie/TopRevenueCarousel';
+import MostPopularCarousel from '@/components/movie/MostPopularCarousel';
 
 export default function Body() {
     const { isDark } = useTheme();
@@ -14,7 +15,8 @@ export default function Body() {
         <main className={`w-[1200px] p-6 mt-1 min-h-[670px] transition-colors ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'
             }`}>
             <TopRevenueCarousel />
-            
+            <MostPopularCarousel />
+
         </main>
     )
 }
