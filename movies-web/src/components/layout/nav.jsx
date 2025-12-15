@@ -43,24 +43,7 @@ export default function Nav() {
 
       {/* Right side - Search + Auth */}
       <div className="flex items-center gap-3">
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={`rounded p-1 px-2 outline-none transition-colors ${isDark ? 'bg-gray-600 text-white placeholder-gray-400' : 'bg-white text-black'
-              }`}
-            placeholder="Search movies..."
-          />
-          <button
-            type="submit"
-            className={`border px-3 py-1 rounded-md transition-colors flex items-center gap-1 ${isDark ? 'border-green-400 text-green-400 hover:bg-green-400/10' : 'border-green-700 text-green-700 hover:bg-green-700/10'
-              }`}
-          >
-            <SearchIcon size={16} />
-            Search
-          </button>
-        </form>
+        
 
         <div className="flex gap-2 ml-2">
           <Link
@@ -82,7 +65,27 @@ export default function Nav() {
             Register
           </Link>
         </div>
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={`rounded p-1 px-2 outline-none transition-colors ${isDark ? 'bg-gray-600 text-white placeholder-gray-400' : 'bg-white text-black'
+              }`}
+            placeholder="Search movies..."
+          />
+          <button
+            type="submit"
+            className={`border px-3 py-1 rounded-md transition-colors flex items-center gap-1 ${isDark ? 'border-green-400 text-green-400 hover:bg-green-400/10' : 'border-green-700 text-green-700 hover:bg-green-700/10'
+              }`}
+          >
+            <SearchIcon size={16} />
+            Search
+          </button>
+        </form>
       </div>
+
+      
     </nav>
   )
 }

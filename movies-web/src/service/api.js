@@ -21,7 +21,7 @@ export async function getMostPopularMovies(page = 1, limit = 12) {
 }
 
 export async function prefetchMostPopularFirstTwoPages() {
-  // Fetch page 1 and 2, each 12 items
+
   const [p1, p2] = await Promise.all([
     getMostPopularMovies(1, 12),
     getMostPopularMovies(2, 12),
@@ -71,6 +71,23 @@ export async function prefetchTopRatedFirstTwoPages() {
 export async function getMovieDetail(id) {
   if (!id) throw new Error('Movie id is required');
   const url = `${backendUrl}/api/movies/${id}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-app-token": appToken,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function searchMovies(title = '', page = 1, limit = 21) {
+  const url = `${backendUrl}/api/movies/search?title=${encodeURIComponent(title)}&page=${page}&limit=${limit}`;
   const response = await fetch(url, {
     method: "GET",
     headers: {

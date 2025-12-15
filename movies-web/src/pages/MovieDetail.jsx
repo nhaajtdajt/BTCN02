@@ -60,11 +60,11 @@ export default function MovieDetail() {
     const sectionBg = isDark ? 'bg-gray-900/70 border-gray-800' : 'bg-white border-gray-200';
 
     return (
-        <div className={`min-w-[1200px] mx-auto p-6 transition-colors ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'}`}>
+        <div className={`w-[1200px]  mx-auto p-6 transition-colors ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'}`}>
             <div className="mb-4 flex items-center justify-between">
                 <button
                     onClick={() => navigate(-1)}
-                    className={`px-3 py-1.5 rounded-md text-sm shadow-sm hover:shadow transition ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
+                    className={`px-3 py-1.5 rounded-md text-sm shadow-sm hover:shadow hover:shadow-lg transition ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
                 >
                     ← Back
                 </button>
