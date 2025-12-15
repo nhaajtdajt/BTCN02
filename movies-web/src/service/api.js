@@ -103,3 +103,20 @@ export async function searchMovies(title = '', page = 1, limit = 21) {
   return response.json();
 }
 
+export async function getPersonDetail(id) {
+  if (!id) throw new Error('Person id is required');
+  const url = `${backendUrl}/api/persons/${id}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-app-token": appToken,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
+}

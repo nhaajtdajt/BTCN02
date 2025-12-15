@@ -141,7 +141,7 @@ export default function MovieDetail() {
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 {ratings.map(([label, value]) => {
                                     let val = Number(value);
-                                    if (val>10) val = val / 10;
+                                    if (val > 10) val = val / 10;
                                     const percent = Math.min(val * 10, 100);
                                     return (
                                         <div key={label} className={`p-4 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
@@ -185,7 +185,12 @@ export default function MovieDetail() {
                             <h2 className="text-xl font-semibold mb-4">🎬 Directors</h2>
                             <div className="flex flex-wrap gap-2">
                                 {movie.directors.map(d => (
-                                    <Badge key={d.id || d.name} variant="outline">
+                                    <Badge
+                                        key={d.id || d.name}
+                                        variant="outline"
+                                        onClick={() => d.id && navigate(`/person/${d.id}`)}
+                                        className="cursor-pointer transition hover:bg-blue-100 hover:border-blue-500"
+                                    >
                                         {d.name}
                                     </Badge>
                                 ))}
@@ -201,7 +206,8 @@ export default function MovieDetail() {
                                 {movie.actors.map(a => (
                                     <div
                                         key={a.id || a.name}
-                                        className={`flex gap-3 p-4 rounded-lg transition hover:-translate-y-1 hover:shadow-lg
+                                        onClick={() => a.id && navigate(`/person/${a.id}`)}
+                                        className={`flex gap-3 p-4 rounded-lg transition hover:-translate-y-1 hover:shadow-lg cursor-pointer
                     ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}
                                     >
                                         <Avatar>

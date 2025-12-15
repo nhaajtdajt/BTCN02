@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight, Film } from 'lucide-react';
 
 export default function Search() {
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const { isDark } = useTheme();
     const query = searchParams.get('q') || '';
 
