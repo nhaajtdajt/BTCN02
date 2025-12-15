@@ -5,6 +5,7 @@ import { getMovieDetail } from '@/service/api';
 import { Badge } from '@/components/ui/badge';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import MovieCard from '@/components/common/MovieCard';
 
 export default function MovieDetail() {
     const { id } = useParams();
@@ -252,24 +253,11 @@ export default function MovieDetail() {
                             <h2 className="text-xl font-semibold mb-4">🎞️ Similar Movies</h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {movie.similar_movies.map(sm => (
-                                    <div
+                                    <MovieCard
                                         key={sm.id}
-                                        onClick={() => sm.id && navigate(`/movie/${sm.id}`)}
-                                        className={`cursor-pointer rounded-lg overflow-hidden border transition hover:-translate-y-1 hover:shadow ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}
-                                    >
-                                        <AspectRatio ratio={2 / 3} className={`w-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                                            {sm.image ? (
-                                                <img src={sm.image} alt={sm.title} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-xs opacity-70">No image</div>
-                                            )}
-                                        </AspectRatio>
-                                        <div className="p-2 text-sm">
-                                            <p className="font-semibold leading-tight">{sm.title}</p>
-                                            {sm.year && <p className="opacity-70">{sm.year}</p>}
-                                            {sm.rate && <p className="opacity-70">★ {sm.rate}</p>}
-                                        </div>
-                                    </div>
+                                        movie={sm}
+                                        options={{ showRate: true, useCard: false }}
+                                    />
                                 ))}
                             </div>
                         </div>

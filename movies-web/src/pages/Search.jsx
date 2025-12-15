@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { searchMovies } from '@/service/api';
-import { Card, CardContent } from '@/components/ui/card';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { ChevronLeft, ChevronRight, Film } from 'lucide-react';
+import MovieCard from '@/components/common/MovieCard';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Search() {
     const [searchParams] = useSearchParams();
-    // const navigate = useNavigate();
     const { isDark } = useTheme();
     const query = searchParams.get('q') || '';
 
@@ -87,54 +85,11 @@ export default function Search() {
                 <div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
                         {displayedResults.map((movie) => (
-                            <Card
+                            <MovieCard
                                 key={movie.id}
-                                onClick={() => movie.id && navigate(`/movie/${movie.id}`)}
-                                className={`cursor-pointer transition hover:-translate-y-1  hover:shadow-lg overflow-hidden ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                                    }`}
-                            >
-                                <AspectRatio ratio={2 / 3} className="w-full bg-gray-200">
-                                    {movie.image ? (
-                                        <img
-                                            src={movie.image}
-                                            alt={movie.title}
-                                            className="w-full h-full object-cover"
-                                            onError={(e) => {
-                                                e.currentTarget.onerror = null;
-                                                e.currentTarget.src = '';
-                                                e.currentTarget.style.display = 'none';
-
-                                                const placeholder = e.currentTarget.parentElement?.querySelector('.poster-fallback');
-                                                if (placeholder) placeholder.style.display = 'flex';
-                                            }}
-                                        />
-                                    ) : null}
-                                    <div className="poster-fallback w-full h-full hidden items-center justify-center text-gray-500">
-                                        <Film className="w-10 h-10" />
-                                    </div>
-                                </AspectRatio>
-                                <CardContent className="p-3">
-                                    <p className={`font-semibold text-sm leading-tight line-clamp-2 ${isDark ? 'text-white' : 'border-gray-200 bg-white'
-                                        }`}  >{movie.title}</p>
-                                    <div className="flex items-center justify-between mt-1 text-xs opacity-70">
-                                        {movie.year && <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{movie.year}</span>}
-                                        {movie.rate && <span className={`flex items-center gap-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>⭐ {movie.rate}</span>}
-                                    </div>
-                                    {movie.genres?.length > 0 && (
-                                        <div className="flex flex-wrap gap-1 mt-2">
-                                            {movie.genres.slice(0, 2).map((g) => (
-                                                <span
-                                                    key={g}
-                                                    className={`text-[10px] px-1.5 py-0.5 rounded ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                                                        }`}
-                                                >
-                                                    {g}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                movie={movie}
+                                options={{ showGenres: true, showRate: true }}
+                            />
                         ))}
                     </div>
 
