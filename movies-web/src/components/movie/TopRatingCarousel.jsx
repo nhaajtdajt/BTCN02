@@ -93,22 +93,23 @@ export default function TopRatingCarousel() {
                         <div className="py-8 text-sm text-red-500">{error}</div>
                     )}
                     {!loading && !error && (
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-3 gap-3 overflow-visible">
                             {currentSlice.map((m) => (
                                 <div
                                     key={m.id}
-                                    className={`rounded overflow-hidden border shadow-sm ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'}`}
+                                    className={`group relative rounded overflow-hidden border shadow-sm transition-transform duration-300 hover:scale-110 hover:z-20 overflow-visible ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'}`}
                                 >
-                                    <div className="relative h-[220px] bg-gray-200">
+                                    <div className="relative h-[220px] bg-gray-200 overflow-visible">
                                         <img
                                             src={m.image}
                                             alt={m.title}
                                             className="w-full h-full object-fill"
                                         />
-                                    </div>
-                                    <div className={`p-2 text-center ${isDark ? 'text-white' : 'text-black'}`}>
-                                        <div className="text-base font-semibold whitespace-normal break-words leading-snug">{m.title}</div>
-                                        {m.year && <div className="text-sm opacity-80">{m.year}</div>}
+                                        <div
+                                            className={`absolute left-0 right-0 p-1 top-full text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isDark ? 'bg-black' : 'bg-black'}`}
+                                        >
+                                            <div className="text-xl h-auto font-semibold whitespace-normal break-words">{m.title} {m.year ? `(${m.year})` : ''}</div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
