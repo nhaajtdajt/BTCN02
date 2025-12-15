@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
-import { getMovieDetail } from '@/service/api';
+import { getMovieDetail, getMovieReviews } from '@/service/api';
 import { Badge } from '@/components/ui/badge';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card } from '@/components/ui/card';
 import MovieCard from '@/components/common/MovieCard';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function MovieDetail() {
     const { id } = useParams();
@@ -14,6 +16,13 @@ export default function MovieDetail() {
     const [movie, setMovie] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    // Reviews state
+    const [reviews, setReviews] = useState([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
+    const [reviewsPagination, setReviewsPagination] = useState(null);
+    const [currentReviewPage, setCurrentReviewPage] = useState(1);
+    const [expandedReviews, setExpandedReviews] = useState(new Set());
 
     useEffect(() => {
         let ignore = false;
@@ -34,6 +43,28 @@ export default function MovieDetail() {
         return () => { ignore = true; };
     }, [id]);
 
+    // Fetch reviews
+    useEffect(() => {
+        let ignore = false;
+        async function loadReviews() {
+            if (!id) return;
+            setReviewsLoading(true);
+            try {
+                const data = await getMovieReviews(id, currentReviewPage, 12, 'newest');
+                if (!ignore) {
+                    setReviews(data.data || []);
+                    setReviewsPagination(data.pagination);
+                }
+            } catch (err) {
+                console.error('Failed to load reviews:', err);
+            } finally {
+                if (!ignore) setReviewsLoading(false);
+            }
+        }
+        loadReviews();
+        return () => { ignore = true; };
+    }, [id, currentReviewPage]);
+
     const ratings = useMemo(() => {
         if (!movie?.ratings) return [];
         const entries = [
@@ -45,6 +76,25 @@ export default function MovieDetail() {
         ];
         return entries.filter(([, v]) => v);
     }, [movie]);
+
+    const toggleReviewExpanded = (reviewId) => {
+        setExpandedReviews(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(reviewId)) {
+                newSet.delete(reviewId);
+            } else {
+                newSet.add(reviewId);
+            }
+            return newSet;
+        });
+    };
+
+    const handleReviewPageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= (reviewsPagination?.total_pages || 1)) {
+            setCurrentReviewPage(newPage);
+            setExpandedReviews(new Set());
+        }
+    };
 
     const boxOfficeEntries = useMemo(() => {
         if (!movie?.box_office) return [];
@@ -226,26 +276,104 @@ export default function MovieDetail() {
                     )}
 
                     {/* ================= REVIEWS ================= */}
-                    {movie.reviews?.length > 0 && (
-                        <div className={`rounded-xl border ${sectionBg} p-6`}>
-                            <h2 className="text-xl font-semibold mb-4">📝 User Reviews</h2>
-                            <div className="space-y-4">
-                                {movie.reviews.map((r, idx) => (
-                                    <div key={idx} className={`p-4 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                                        <div className="flex justify-between items-center">
-                                            <p className="font-semibold">{r.user}</p>
-                                            <p className="text-sm flex items-center gap-1">⭐ {r.rate}</p>
-                                        </div>
-                                        <p className="mt-1 font-medium">{r.title}</p>
-                                        <p className="mt-1 text-sm opacity-90 leading-relaxed">{r.content}</p>
-                                        <p className="mt-1 text-xs opacity-60">
-                                            {new Date(r.date).toLocaleDateString()}
-                                        </p>
+                    <div className={`rounded-xl border ${sectionBg} p-6`}>
+                        <h2 className="text-xl font-semibold mb-4">📝 User Reviews</h2>
+
+                        {reviewsLoading && (
+                            <div className="py-6 text-center opacity-70">Loading reviews...</div>
+                        )}
+
+                        {!reviewsLoading && reviews.length === 0 && (
+                            <div className="py-6 text-center opacity-70">No reviews yet.</div>
+                        )}
+
+                        {!reviewsLoading && reviews.length > 0 && (
+                            <>
+                                <div className="space-y-4">
+                                    {reviews.map((review) => {
+                                        const isExpanded = expandedReviews.has(review.id);
+                                        const contentLength = review.content?.length || 0;
+                                        const shouldTruncate = contentLength > 300;
+                                        const displayContent = shouldTruncate && !isExpanded
+                                            ? review.content.substring(0, 300) + '...'
+                                            : review.content;
+
+                                        return (
+                                            <Card key={review.id} className={`p-4 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+                                                <div className="flex justify-between items-start gap-4">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <p className="font-semibold">{review.username}</p>
+                                                            <span className="text-sm flex items-center gap-1 px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-600">
+                                                                ⭐ {review.rate}/10
+                                                            </span>
+                                                            {review.warning_spoilers && (
+                                                                <Badge variant="destructive" className="text-xs">
+                                                                    Spoiler Warning
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                        <h3 className="font-medium text-base mb-2">{review.title}</h3>
+                                                        <p className="text-sm opacity-90 leading-relaxed whitespace-pre-wrap">
+                                                            {displayContent}
+                                                        </p>
+                                                        {shouldTruncate && (
+                                                            <button
+                                                                onClick={() => toggleReviewExpanded(review.id)}
+                                                                className="mt-2 text-sm font-medium text-blue-500 hover:text-blue-600 transition"
+                                                            >
+                                                                {isExpanded ? 'Show less' : 'Show more'}
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <p className="mt-2 text-xs opacity-60">
+                                                    {new Date(review.date).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })}
+                                                </p>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Pagination */}
+                                {reviewsPagination && reviewsPagination.total_pages > 1 && (
+                                    <div className="flex justify-center items-center gap-4 mt-6">
+                                        <button
+                                            onClick={() => handleReviewPageChange(currentReviewPage - 1)}
+                                            disabled={currentReviewPage === 1}
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${currentReviewPage === 1
+                                                    ? 'opacity-50 cursor-not-allowed'
+                                                    : 'hover:bg-gray-700/50'
+                                                } ${isDark ? 'bg-gray-800' : 'bg-gray-200'}`}
+                                        >
+                                            <ChevronLeft className="w-4 h-4" />
+                                            Previous
+                                        </button>
+
+                                        <span className="text-sm">
+                                            Page {currentReviewPage} of {reviewsPagination.total_pages}
+                                        </span>
+
+                                        <button
+                                            onClick={() => handleReviewPageChange(currentReviewPage + 1)}
+                                            disabled={currentReviewPage === reviewsPagination.total_pages}
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${currentReviewPage === reviewsPagination.total_pages
+                                                    ? 'opacity-50 cursor-not-allowed'
+                                                    : 'hover:bg-gray-700/50'
+                                                } ${isDark ? 'bg-gray-800' : 'bg-gray-200'}`}
+                                        >
+                                            Next
+                                            <ChevronRight className="w-4 h-4" />
+                                        </button>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                                )}
+                            </>
+                        )}
+                    </div>
 
                     {/* ================= SIMILAR MOVIES ================= */}
                     {movie.similar_movies?.length > 0 && (

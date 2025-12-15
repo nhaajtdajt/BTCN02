@@ -120,3 +120,21 @@ export async function getPersonDetail(id) {
 
   return response.json();
 }
+
+export async function getMovieReviews(movieId, page = 1, limit = 12, sort = 'newest') {
+  if (!movieId) throw new Error('Movie id is required');
+  const url = `${backendUrl}/api/movies/${movieId}/reviews?page=${page}&limit=${limit}&sort=${sort}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-app-token": appToken,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
+}
