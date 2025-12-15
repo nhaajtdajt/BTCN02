@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Film } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { getTopRatedMovies, prefetchTopRatedFirstTwoPages } from '@/service/api';
@@ -40,31 +40,37 @@ export default function TopRatingCarousel() {
         return () => { ignore = true; };
     }, []);
 
-    async function ensureMoreIfNeeded(nextCursor) {
+
+    // Preemptively fetch next page when cursor is close to end
+    useEffect(() => {
+        let ignore = false;
         const total = items.length;
-        const atOrBeyondEnd = nextCursor >= total - VIEW_SIZE;
-        if (!atOrBeyondEnd) return;
-        if (isFetchingMoreRef.current) return;
+        const nextCursor = cursor + VIEW_SIZE;
+        const isApproachingEnd = nextCursor >= total - VIEW_SIZE;
 
-        const nextPageIndex = Math.floor(total / PAGE_SIZE) + 1;
-        if (pageLoaded.has(nextPageIndex)) return;
-
-        isFetchingMoreRef.current = true;
-        try {
-            const res = await getTopRatedMovies(nextPageIndex, PAGE_SIZE);
-            setItems((prev) => [...prev, ...(res?.data || [])]);
-            setPageLoaded((prev) => new Set([...prev, nextPageIndex]));
-        } finally {
-            isFetchingMoreRef.current = false;
+        if (isApproachingEnd && !isFetchingMoreRef.current) {
+            const nextPageIndex = Math.floor(total / PAGE_SIZE) + 1;
+            if (!pageLoaded.has(nextPageIndex)) {
+                isFetchingMoreRef.current = true;
+                (async () => {
+                    try {
+                        const res = await getTopRatedMovies(nextPageIndex, PAGE_SIZE);
+                        if (!ignore) {
+                            setItems((prev) => [...prev, ...(res?.data || [])]);
+                            setPageLoaded((prev) => new Set([...prev, nextPageIndex]));
+                        }
+                    } finally {
+                        isFetchingMoreRef.current = false;
+                    }
+                })();
+            }
         }
-    }
+        return () => { ignore = true; };
+    }, [cursor, items.length, pageLoaded]);
 
-    const goNext = async () => {
+    const goNext = () => {
         if (!items.length) return;
         let next = cursor + VIEW_SIZE;
-        if (next > items.length - VIEW_SIZE) {
-            await ensureMoreIfNeeded(next);
-        }
         next = Math.min(next, Math.max(items.length - VIEW_SIZE, 0));
         setCursor(next);
     };
@@ -103,11 +109,23 @@ export default function TopRatingCarousel() {
                                     className={`group relative rounded overflow-hidden border shadow-sm transition-transform duration-300 hover:scale-110 hover:z-20 overflow-visible cursor-pointer ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'}`}
                                 >
                                     <div className="relative h-[220px] bg-gray-200 overflow-visible">
-                                        <img
-                                            src={m.image}
-                                            alt={m.title}
-                                            className="w-full h-full object-fill"
-                                        />
+                                        {m.image ? (
+                                            <img
+                                                src={m.image}
+                                                alt={m.title}
+                                                className="w-full h-full object-fill"
+                                                onError={(e) => {
+                                                    e.currentTarget.onerror = null;
+                                                    e.currentTarget.src = '';
+                                                    e.currentTarget.style.display = 'none';
+                                                    const placeholder = e.currentTarget.parentElement?.querySelector('.carousel-fallback');
+                                                    if (placeholder) placeholder.style.display = 'flex';
+                                                }}
+                                            />
+                                        ) : null}
+                                        <div className="carousel-fallback w-full h-full hidden items-center justify-center text-gray-400">
+                                            <Film className="w-12 h-12" />
+                                        </div>
                                         <div
                                             className={`absolute left-0 right-0 p-1 top-full text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isDark ? 'bg-black' : 'bg-black'}`}
                                         >

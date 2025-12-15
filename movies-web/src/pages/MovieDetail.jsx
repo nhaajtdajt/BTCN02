@@ -27,6 +27,10 @@ export default function MovieDetail() {
     const [reviewsSort, setReviewsSort] = useState('newest');
     const [expandedReviews, setExpandedReviews] = useState(new Set());
 
+    // Similar movies pagination state
+    const [currentSimilarPage, setCurrentSimilarPage] = useState(1);
+    const SIMILAR_MOVIES_PER_PAGE = 8;
+
     useEffect(() => {
         let ignore = false;
         async function load() {
@@ -99,6 +103,19 @@ export default function MovieDetail() {
         }
     };
 
+    // Similar movies pagination
+    const paginatedSimilarMovies = useMemo(() => {
+        if (!movie?.similar_movies) return [];
+        const startIdx = (currentSimilarPage - 1) * SIMILAR_MOVIES_PER_PAGE;
+        const endIdx = startIdx + SIMILAR_MOVIES_PER_PAGE;
+        return movie.similar_movies.slice(startIdx, endIdx);
+    }, [movie?.similar_movies, currentSimilarPage]);
+
+    const totalSimilarPages = useMemo(() => {
+        if (!movie?.similar_movies) return 1;
+        return Math.ceil(movie.similar_movies.length / SIMILAR_MOVIES_PER_PAGE);
+    }, [movie?.similar_movies]);
+
     const boxOfficeEntries = useMemo(() => {
         if (!movie?.box_office) return [];
         const entries = [
@@ -120,6 +137,7 @@ export default function MovieDetail() {
                     onClick={() => navigate(-1)}
                     variant="outline"
                     size="sm"
+                    className={isDark ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : ''}
                 >
                     ← Back
                 </Button>
@@ -280,24 +298,24 @@ export default function MovieDetail() {
                     )}
 
                     {/* ================= REVIEWS ================= */}
-                    <div className={`rounded-xl border ${sectionBg} p-6`}>
+                    <div className={`rounded-xl border ${sectionBg} p-6 ${isDark ? 'text-white' : 'text-black'}`}>
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-xl font-semibold">📝 User Reviews</h2>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm">
+                                    <Button variant="outline" size="sm" className={isDark ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : ''}>
                                         Sort by: {reviewsSort === 'newest' ? 'Newest' : reviewsSort === 'oldest' ? 'Oldest' : reviewsSort === 'highest' ? 'Highest' : 'Lowest'}
                                         <ChevronDown className="w-4 h-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}>
+                                <DropdownMenuContent className={isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white text-black'}>
                                     <DropdownMenuItem
                                         onClick={() => {
                                             setReviewsSort('newest');
                                             setCurrentReviewPage(1);
                                             setExpandedReviews(new Set());
                                         }}
-                                        className={`cursor-pointer ${reviewsSort === 'newest' ? 'bg-blue-500/20' : ''}`}
+                                        className={`cursor-pointer ${reviewsSort === 'newest' ? (isDark ? 'bg-blue-600' : 'bg-blue-500/20') : (isDark ? 'hover:bg-gray-700' : '')} ${isDark ? 'text-white' : ''}`}
                                     >
                                         Newest
                                     </DropdownMenuItem>
@@ -307,7 +325,7 @@ export default function MovieDetail() {
                                             setCurrentReviewPage(1);
                                             setExpandedReviews(new Set());
                                         }}
-                                        className={`cursor-pointer ${reviewsSort === 'oldest' ? 'bg-blue-500/20' : ''}`}
+                                        className={`cursor-pointer ${reviewsSort === 'oldest' ? (isDark ? 'bg-blue-600' : 'bg-blue-500/20') : (isDark ? 'hover:bg-gray-700' : '')} ${isDark ? 'text-white' : ''}`}
                                     >
                                         Oldest
                                     </DropdownMenuItem>
@@ -317,7 +335,7 @@ export default function MovieDetail() {
                                             setCurrentReviewPage(1);
                                             setExpandedReviews(new Set());
                                         }}
-                                        className={`cursor-pointer ${reviewsSort === 'highest' ? 'bg-blue-500/20' : ''}`}
+                                        className={`cursor-pointer ${reviewsSort === 'highest' ? (isDark ? 'bg-blue-600' : 'bg-blue-500/20') : (isDark ? 'hover:bg-gray-700' : '')} ${isDark ? 'text-white' : ''}`}
                                     >
                                         Highest Rating
                                     </DropdownMenuItem>
@@ -327,7 +345,7 @@ export default function MovieDetail() {
                                             setCurrentReviewPage(1);
                                             setExpandedReviews(new Set());
                                         }}
-                                        className={`cursor-pointer ${reviewsSort === 'lowest' ? 'bg-blue-500/20' : ''}`}
+                                        className={`cursor-pointer ${reviewsSort === 'lowest' ? (isDark ? 'bg-blue-600' : 'bg-blue-500/20') : (isDark ? 'hover:bg-gray-700' : '')} ${isDark ? 'text-white' : ''}`}
                                     >
                                         Lowest Rating
                                     </DropdownMenuItem>
@@ -336,11 +354,11 @@ export default function MovieDetail() {
                         </div>
 
                         {reviewsLoading && (
-                            <div className="py-6 text-center opacity-70">Loading reviews...</div>
+                            <div className={`py-6 text-center opacity-70 ${isDark ? 'text-gray-300' : ''}`}>Loading reviews...</div>
                         )}
 
                         {!reviewsLoading && reviews.length === 0 && (
-                            <div className="py-6 text-center opacity-70">No reviews yet.</div>
+                            <div className={`py-6 text-center opacity-70 ${isDark ? 'text-gray-300' : ''}`}>No reviews yet.</div>
                         )}
 
                         {!reviewsLoading && reviews.length > 0 && (
@@ -359,7 +377,7 @@ export default function MovieDetail() {
                                                 <div className="flex justify-between items-start gap-4">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-2">
-                                                            <p className="font-semibold">{review.username}</p>
+                                                            <p className={`font-semibold ${isDark ? 'text-white' : 'text-black'}`}>{review.username}</p>
                                                             <span className="text-sm flex items-center gap-1 px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-600">
                                                                 ⭐ {review.rate}/10
                                                             </span>
@@ -369,8 +387,8 @@ export default function MovieDetail() {
                                                                 </Badge>
                                                             )}
                                                         </div>
-                                                        <h3 className="font-medium text-base mb-2">{review.title}</h3>
-                                                        <p className="text-sm opacity-90 leading-relaxed whitespace-pre-wrap">
+                                                        <h3 className={`font-medium text-base mb-2 ${isDark ? 'text-white' : 'text-black'}`}>{review.title}</h3>
+                                                        <p className={`text-sm opacity-90 leading-relaxed whitespace-pre-wrap ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
                                                             {displayContent}
                                                         </p>
                                                         {shouldTruncate && (
@@ -383,7 +401,7 @@ export default function MovieDetail() {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <p className="mt-2 text-xs opacity-60">
+                                                <p className={`mt-2 text-xs opacity-60 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                                                     {new Date(review.date).toLocaleDateString('en-US', {
                                                         year: 'numeric',
                                                         month: 'long',
@@ -403,6 +421,7 @@ export default function MovieDetail() {
                                             disabled={currentReviewPage === 1}
                                             variant="outline"
                                             size="sm"
+                                            className={isDark && currentReviewPage !== 1 ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : isDark ? 'bg-gray-800 border-gray-700 text-gray-500' : ''}
                                         >
                                             <ChevronLeft className="w-4 h-4" />
                                             Previous
@@ -417,6 +436,7 @@ export default function MovieDetail() {
                                             disabled={currentReviewPage === reviewsPagination.total_pages}
                                             variant="outline"
                                             size="sm"
+                                            className={isDark && currentReviewPage !== reviewsPagination.total_pages ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : isDark ? 'bg-gray-800 border-gray-700 text-gray-500' : ''}
                                         >
                                             Next
                                             <ChevronRight className="w-4 h-4" />
@@ -432,7 +452,7 @@ export default function MovieDetail() {
                         <div className={`rounded-xl border ${sectionBg} p-6`}>
                             <h2 className="text-xl font-semibold mb-4">🎞️ Similar Movies</h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {movie.similar_movies.map(sm => (
+                                {paginatedSimilarMovies.map(sm => (
                                     <MovieCard
                                         key={sm.id}
                                         movie={sm}
@@ -440,6 +460,37 @@ export default function MovieDetail() {
                                     />
                                 ))}
                             </div>
+
+                            {/* Pagination for similar movies */}
+                            {totalSimilarPages > 1 && (
+                                <div className="flex justify-center items-center gap-4 mt-6">
+                                    <Button
+                                        onClick={() => setCurrentSimilarPage(p => Math.max(1, p - 1))}
+                                        disabled={currentSimilarPage === 1}
+                                        variant="outline"
+                                        size="sm"
+                                        className={isDark && currentSimilarPage !== 1 ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : isDark ? 'bg-gray-800 border-gray-700 text-gray-500' : ''}
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                        Previous
+                                    </Button>
+
+                                    <span className="text-sm">
+                                        Page {currentSimilarPage} of {totalSimilarPages}
+                                    </span>
+
+                                    <Button
+                                        onClick={() => setCurrentSimilarPage(p => Math.min(totalSimilarPages, p + 1))}
+                                        disabled={currentSimilarPage === totalSimilarPages}
+                                        variant="outline"
+                                        size="sm"
+                                        className={isDark && currentSimilarPage !== totalSimilarPages ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : isDark ? 'bg-gray-800 border-gray-700 text-gray-500' : ''}
+                                    >
+                                        Next
+                                        <ChevronRight className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     )}
 

@@ -33,7 +33,7 @@ export default function MovieCard({ movie, options = {} }) {
         }
     };
 
-    const cardClasses = `cursor-pointer rounded-lg overflow-hidden border transition hover:-translate-y-1 hover:shadow-lg ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+    const cardClasses = `cursor-pointer rounded-lg overflow-hidden border transition hover:-translate-y-1 hover:scale-110 transition-transform hover:shadow-lg ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
         }`;
 
     const posterContent = (
