@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { getMostPopularMovies } from '@/service/api';
 
 export default function TopRevenueCarousel() {
+    const navigate = useNavigate();
     const { isDark } = useTheme();
     const [movies, setMovies] = useState([]);
     const [index, setIndex] = useState(0);
@@ -75,6 +77,7 @@ export default function TopRevenueCarousel() {
                                 return (
                                     <article
                                         key={movie.id}
+                                        onClick={() => movie.id && navigate(`/movie/${movie.id}`)}
                                         className={`w-[280px] overflow-hidden rounded-lg shadow-lg border transition-all duration-300 transform hover:scale-110 hover:shadow-2xl cursor-pointer group ${isDark
                                             ? 'border-gray-700 bg-gray-900'
                                             : 'border-gray-300 bg-white'
@@ -119,8 +122,8 @@ export default function TopRevenueCarousel() {
                                                     <div
                                                         key={idx}
                                                         className={`h-1.5 transition-all duration-300 rounded-full ${idx === index
-                                                                ? `w-6 ${isDark ? 'bg-blue-400' : 'bg-white'}`
-                                                                : `w-1.5 ${isDark ? 'bg-white/50' : 'bg-white/70'}`
+                                                            ? `w-6 ${isDark ? 'bg-blue-400' : 'bg-white'}`
+                                                            : `w-1.5 ${isDark ? 'bg-white/50' : 'bg-white/70'}`
                                                             }`}
                                                     />
                                                 ))}

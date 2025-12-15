@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { getMostPopularMovies, prefetchMostPopularFirstTwoPages } from '@/service/api';
 
 export default function MostPopularCarousel() {
+    const navigate = useNavigate();
     const { isDark } = useTheme();
     const [items, setItems] = useState([]); // merged list
     const [pageLoaded, setPageLoaded] = useState(new Set()); // track which pages fetched
@@ -98,7 +100,8 @@ export default function MostPopularCarousel() {
                             {currentSlice.map((m) => (
                                 <div
                                     key={m.id}
-                                    className={`group relative rounded overflow-hidden border shadow-sm transition-transform duration-300 hover:scale-110 hover:z-20 overflow-visible ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'
+                                    onClick={() => m.id && navigate(`/movie/${m.id}`)}
+                                    className={`group relative rounded overflow-hidden border shadow-sm transition-transform duration-300 hover:scale-110 hover:z-20 overflow-visible cursor-pointer ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'
                                         }`}
                                 >
                                     <div className="relative h-[220px] bg-gray-200 overflow-visible">

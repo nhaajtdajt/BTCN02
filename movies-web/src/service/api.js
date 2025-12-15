@@ -67,3 +67,22 @@ export async function prefetchTopRatedFirstTwoPages() {
 
   return merged;
 }
+
+export async function getMovieDetail(id) {
+  if (!id) throw new Error('Movie id is required');
+  const url = `${backendUrl}/api/movies/${id}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-app-token": appToken,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
+}
+
