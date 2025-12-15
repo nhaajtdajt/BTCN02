@@ -72,7 +72,7 @@ export default function Nav() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className={`rounded p-1 px-2 outline-none transition-colors ${isDark ? 'bg-gray-600 text-white placeholder-gray-400' : 'bg-white text-black'
               }`}
-            placeholder="Search movies..."
+            placeholder="Search Title, Person, Genre ..."
           />
           <button
             type="submit"

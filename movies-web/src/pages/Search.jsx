@@ -90,7 +90,7 @@ export default function Search() {
                             <Card
                                 key={movie.id}
                                 onClick={() => movie.id && navigate(`/movie/${movie.id}`)}
-                                className={`cursor-pointer transition hover:-translate-y-1 hover:scale-110 transition-transform hover:shadow-lg overflow-hidden ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                                className={`cursor-pointer transition hover:-translate-y-1  hover:shadow-lg overflow-hidden ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                                     }`}
                             >
                                 <AspectRatio ratio={2 / 3} className="w-full bg-gray-200">

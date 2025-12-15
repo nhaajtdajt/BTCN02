@@ -87,7 +87,7 @@ export async function getMovieDetail(id) {
 }
 
 export async function searchMovies(title = '', page = 1, limit = 21) {
-  const url = `${backendUrl}/api/movies/search?title=${encodeURIComponent(title)}&page=${page}&limit=${limit}`;
+  const url = `${backendUrl}/api/movies/search?q=${encodeURIComponent(title)}&page=${page}&limit=${limit}`;
   const response = await fetch(url, {
     method: "GET",
     headers: {
