@@ -1,6 +1,7 @@
 import { Home, Search as SearchIcon, Heart, User } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
+import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 
 export default function Nav() {
@@ -43,27 +44,23 @@ export default function Nav() {
 
       {/* Right side - Search + Auth */}
       <div className="flex items-center gap-3">
-        
+
 
         <div className="flex gap-2 ml-2">
-          <Link
-            to="/login"
-            className={`px-3 py-1 rounded-md text-sm transition-colors ${isDark
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
+          <Button
+            asChild
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700"
           >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className={`px-3 py-1 rounded-md text-sm transition-colors ${isDark
-                ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                : 'bg-purple-500 hover:bg-purple-600 text-white'
-              }`}
+            <Link to="/login">Login</Link>
+          </Button>
+          <Button
+            asChild
+            size="sm"
+            className="bg-purple-600 hover:bg-purple-700"
           >
-            Register
-          </Link>
+            <Link to="/register">Register</Link>
+          </Button>
         </div>
         <form onSubmit={handleSearch} className="flex gap-2">
           <input
@@ -85,7 +82,7 @@ export default function Nav() {
         </form>
       </div>
 
-      
+
     </nav>
   )
 }

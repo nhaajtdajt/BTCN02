@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { searchMovies } from '@/service/api';
+import { Button } from '@/components/ui/button';
 import MovieCard from '@/components/common/MovieCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -95,35 +96,27 @@ export default function Search() {
 
                     {/* Pagination Controls */}
                     <div className="flex justify-center items-center gap-4 py-4">
-                        <button
+                        <Button
                             onClick={handlePrev}
                             disabled={currentPage === 1}
-                            className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${currentPage === 1
-                                ? 'opacity-40 cursor-not-allowed'
-                                : isDark
-                                    ? 'bg-gray-800 hover:bg-gray-700'
-                                    : 'bg-white hover:bg-gray-100 border border-gray-300'
-                                }`}
+                            variant="outline"
+                            size="sm"
                         >
                             <ChevronLeft size={18} />
                             Previous
-                        </button>
+                        </Button>
 
                         <span className="text-sm opacity-80">Page {currentPage}</span>
 
-                        <button
+                        <Button
                             onClick={handleNext}
                             disabled={!hasMore}
-                            className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${!hasMore
-                                ? 'opacity-40 cursor-not-allowed'
-                                : isDark
-                                    ? 'bg-gray-800 hover:bg-gray-700'
-                                    : 'bg-white hover:bg-gray-100 border border-gray-300'
-                                }`}
+                            variant="outline"
+                            size="sm"
                         >
                             Next
                             <ChevronRight size={18} />
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}

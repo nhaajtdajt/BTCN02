@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { getPersonDetail } from '@/service/api';
+import { Button } from '@/components/ui/button';
 import MovieCard from '@/components/common/MovieCard';
 import PersonImage from '@/components/common/PersonImage';
 
@@ -46,12 +47,13 @@ export default function Person() {
     return (
         <div className={`w-[1200px] mx-auto p-6 transition-colors ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'}`}>
             <div className="mb-4 flex items-center justify-between">
-                <button
+                <Button
                     onClick={() => navigate(-1)}
-                    className={`px-3 py-1.5 rounded-md text-sm shadow-sm hover:shadow-lg transition ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
+                    variant="outline"
+                    size="sm"
                 >
                     ← Back
-                </button>
+                </Button>
                 {person?.name && (
                     <span className="text-xs opacity-60">{person.name} • {person.role}</span>
                 )}

@@ -3,11 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { getMovieDetail, getMovieReviews } from '@/service/api';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import MovieCard from '@/components/common/MovieCard';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 
 export default function MovieDetail() {
     const { id } = useParams();
@@ -22,6 +24,7 @@ export default function MovieDetail() {
     const [reviewsLoading, setReviewsLoading] = useState(false);
     const [reviewsPagination, setReviewsPagination] = useState(null);
     const [currentReviewPage, setCurrentReviewPage] = useState(1);
+    const [reviewsSort, setReviewsSort] = useState('newest');
     const [expandedReviews, setExpandedReviews] = useState(new Set());
 
     useEffect(() => {
@@ -50,7 +53,7 @@ export default function MovieDetail() {
             if (!id) return;
             setReviewsLoading(true);
             try {
-                const data = await getMovieReviews(id, currentReviewPage, 12, 'newest');
+                const data = await getMovieReviews(id, currentReviewPage, 12, reviewsSort);
                 if (!ignore) {
                     setReviews(data.data || []);
                     setReviewsPagination(data.pagination);
@@ -63,7 +66,7 @@ export default function MovieDetail() {
         }
         loadReviews();
         return () => { ignore = true; };
-    }, [id, currentReviewPage]);
+    }, [id, currentReviewPage, reviewsSort]);
 
     const ratings = useMemo(() => {
         if (!movie?.ratings) return [];
@@ -113,12 +116,13 @@ export default function MovieDetail() {
     return (
         <div className={`w-[1200px]  mx-auto p-6 transition-colors ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'}`}>
             <div className="mb-4 flex items-center justify-between">
-                <button
+                <Button
                     onClick={() => navigate(-1)}
-                    className={`px-3 py-1.5 rounded-md text-sm shadow-sm hover:shadow hover:shadow-lg transition ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
+                    variant="outline"
+                    size="sm"
                 >
                     ← Back
-                </button>
+                </Button>
                 {movie?.full_title && (
                     <span className="text-xs opacity-60">{movie.full_title}</span>
                 )}
@@ -277,7 +281,59 @@ export default function MovieDetail() {
 
                     {/* ================= REVIEWS ================= */}
                     <div className={`rounded-xl border ${sectionBg} p-6`}>
-                        <h2 className="text-xl font-semibold mb-4">📝 User Reviews</h2>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-semibold">📝 User Reviews</h2>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                        Sort by: {reviewsSort === 'newest' ? 'Newest' : reviewsSort === 'oldest' ? 'Oldest' : reviewsSort === 'highest' ? 'Highest' : 'Lowest'}
+                                        <ChevronDown className="w-4 h-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}>
+                                    <DropdownMenuItem
+                                        onClick={() => {
+                                            setReviewsSort('newest');
+                                            setCurrentReviewPage(1);
+                                            setExpandedReviews(new Set());
+                                        }}
+                                        className={`cursor-pointer ${reviewsSort === 'newest' ? 'bg-blue-500/20' : ''}`}
+                                    >
+                                        Newest
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => {
+                                            setReviewsSort('oldest');
+                                            setCurrentReviewPage(1);
+                                            setExpandedReviews(new Set());
+                                        }}
+                                        className={`cursor-pointer ${reviewsSort === 'oldest' ? 'bg-blue-500/20' : ''}`}
+                                    >
+                                        Oldest
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => {
+                                            setReviewsSort('highest');
+                                            setCurrentReviewPage(1);
+                                            setExpandedReviews(new Set());
+                                        }}
+                                        className={`cursor-pointer ${reviewsSort === 'highest' ? 'bg-blue-500/20' : ''}`}
+                                    >
+                                        Highest Rating
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => {
+                                            setReviewsSort('lowest');
+                                            setCurrentReviewPage(1);
+                                            setExpandedReviews(new Set());
+                                        }}
+                                        className={`cursor-pointer ${reviewsSort === 'lowest' ? 'bg-blue-500/20' : ''}`}
+                                    >
+                                        Lowest Rating
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
 
                         {reviewsLoading && (
                             <div className="py-6 text-center opacity-70">Loading reviews...</div>
@@ -342,33 +398,29 @@ export default function MovieDetail() {
                                 {/* Pagination */}
                                 {reviewsPagination && reviewsPagination.total_pages > 1 && (
                                     <div className="flex justify-center items-center gap-4 mt-6">
-                                        <button
+                                        <Button
                                             onClick={() => handleReviewPageChange(currentReviewPage - 1)}
                                             disabled={currentReviewPage === 1}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${currentReviewPage === 1
-                                                    ? 'opacity-50 cursor-not-allowed'
-                                                    : 'hover:bg-gray-700/50'
-                                                } ${isDark ? 'bg-gray-800' : 'bg-gray-200'}`}
+                                            variant="outline"
+                                            size="sm"
                                         >
                                             <ChevronLeft className="w-4 h-4" />
                                             Previous
-                                        </button>
+                                        </Button>
 
                                         <span className="text-sm">
                                             Page {currentReviewPage} of {reviewsPagination.total_pages}
                                         </span>
 
-                                        <button
+                                        <Button
                                             onClick={() => handleReviewPageChange(currentReviewPage + 1)}
                                             disabled={currentReviewPage === reviewsPagination.total_pages}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${currentReviewPage === reviewsPagination.total_pages
-                                                    ? 'opacity-50 cursor-not-allowed'
-                                                    : 'hover:bg-gray-700/50'
-                                                } ${isDark ? 'bg-gray-800' : 'bg-gray-200'}`}
+                                            variant="outline"
+                                            size="sm"
                                         >
                                             Next
                                             <ChevronRight className="w-4 h-4" />
-                                        </button>
+                                        </Button>
                                     </div>
                                 )}
                             </>
