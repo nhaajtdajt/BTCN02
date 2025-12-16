@@ -1,6 +1,10 @@
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const appToken = import.meta.env.VITE_X_APP_TOKEN;
 
+export function getAccessToken() {
+  return localStorage.getItem('token');
+}
+
 
 export async function getMostPopularMovies(page = 1, limit = 12) {
   const cappedLimit = Math.min(Number(limit) || 12, 12);
@@ -185,3 +189,36 @@ export async function loginUser(payload) {
   }
   return json;
 }
+
+/**
+ * Get current user profile
+ * @returns {Promise<{id:number,username:string,email:string,phone:string,dob:string,role:string}>}
+ */
+export async function getUserProfile() {
+  const token = getAccessToken();
+  if (!token) {
+    const err = new Error('Missing access token');
+    err.status = 401;
+    throw err;
+  }
+
+  const res = await fetch(`${backendUrl}/api/users/profile`, {
+    method: 'GET',
+    headers: {
+      'x-app-token': appToken,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const json = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const err = new Error(json?.message || `Profile fetch failed (HTTP ${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
+
+  return json;
+}
+
+
