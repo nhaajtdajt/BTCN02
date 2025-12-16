@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Film } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { getTopRatedMovies, prefetchTopRatedFirstTwoPages } from '@/service/api';
+import MovieCardSkeleton from '@/components/common/MovieCardSkeleton';
 
 export default function TopRatingCarousel() {
     const navigate = useNavigate();
@@ -95,20 +96,24 @@ export default function TopRatingCarousel() {
 
                 <div className="px-12">
                     {loading && (
-                        <div className="py-8 text-sm opacity-80">Loading top rating movies...</div>
+                        <div className="grid grid-cols-3 gap-3">
+                            {Array.from({ length: 3 }).map((_, idx) => (
+                                <MovieCardSkeleton key={idx} />
+                            ))}
+                        </div>
                     )}
                     {error && (
                         <div className="py-8 text-sm text-red-500">{error}</div>
                     )}
                     {!loading && !error && (
-                        <div className="grid grid-cols-3 gap-3 overflow-visible">
+                        <div className="grid grid-cols-3 gap-3">
                             {currentSlice.map((m) => (
                                 <div
                                     key={m.id}
                                     onClick={() => m.id && navigate(`/movie/${m.id}`)}
-                                    className={`group relative rounded overflow-hidden border shadow-sm transition-transform duration-300 hover:scale-110 hover:z-20 overflow-visible cursor-pointer ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'}`}
+                                    className={`group relative rounded overflow-hidden border shadow-sm transition-transform duration-300 hover:scale-110 hover:z-20 cursor-pointer ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'}`}
                                 >
-                                    <div className="relative h-[220px] bg-gray-200 overflow-visible">
+                                    <div className="relative h-55 bg-gray-200 overflow-hidden">
                                         {m.image ? (
                                             <img
                                                 src={m.image}
@@ -129,7 +134,7 @@ export default function TopRatingCarousel() {
                                         <div
                                             className={`absolute left-0 right-0 p-1 top-full text-white text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isDark ? 'bg-black' : 'bg-black'}`}
                                         >
-                                            <div className="text-xl h-auto font-semibold whitespace-normal break-words">{m.title} {m.year ? `(${m.year})` : ''}</div>
+                                            <div className="text-xl h-auto font-semibold whitespace-normal wrap-break-word">{m.title} {m.year ? `(${m.year})` : ''}</div>
                                         </div>
                                     </div>
                                 </div>

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { getMostPopularMovies } from '@/service/api';
+import MovieCardSkeleton from '@/components/common/MovieCardSkeleton';
 
 export default function TopRevenueCarousel() {
     const navigate = useNavigate();
@@ -62,7 +63,11 @@ export default function TopRevenueCarousel() {
                         }`}
                 >
                     {loading && (
-                        <div className="py-10 text-sm opacity-80">Loading top revenue movies...</div>
+                        <div className="w-full flex justify-center">
+                            <div className="w-70">
+                                <MovieCardSkeleton />
+                            </div>
+                        </div>
                     )}
                     {error && (
                         <div className="py-10 text-sm text-red-500">{error}</div>
@@ -78,13 +83,13 @@ export default function TopRevenueCarousel() {
                                     <article
                                         key={movie.id}
                                         onClick={() => movie.id && navigate(`/movie/${movie.id}`)}
-                                        className={`w-[280px] overflow-hidden rounded-lg shadow-lg border transition-all duration-300 transform hover:scale-110 hover:shadow-2xl cursor-pointer group ${isDark
+                                        className={`w-70 overflow-hidden rounded-lg shadow-lg border transition-all duration-300 transform hover:scale-110 hover:shadow-2xl cursor-pointer group ${isDark
                                             ? 'border-gray-700 bg-gray-900'
                                             : 'border-gray-300 bg-white'
                                             }`}
                                     >
                                         {/* Poster Image */}
-                                        <div className="relative bg-gray-300 flex items-center justify-center overflow-hidden h-[380px]">
+                                        <div className="relative bg-gray-300 flex items-center justify-center overflow-hidden h-95">
                                             <img
                                                 src={movie.image}
                                                 alt={movie.title}
@@ -92,7 +97,7 @@ export default function TopRevenueCarousel() {
                                             />
 
                                             {/* Info overlay at bottom */}
-                                            <div className={`absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white`}>
+                                            <div className={`absolute bottom-0 left-0 right-0 p-3 bg-linear-to-t from-black/80 to-transparent text-white`}>
                                                 <h3 className="font-bold text-sm line-clamp-2">{movie.title}</h3>
                                                 <p className="text-xs opacity-90 mt-1">{movie.year}</p>
 

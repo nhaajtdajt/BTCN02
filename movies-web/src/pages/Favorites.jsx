@@ -3,6 +3,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { getFavorites, getMovieDetail } from '@/service/api';
 import MovieCard from '@/components/common/MovieCard';
+import MovieCardSkeleton from '@/components/common/MovieCardSkeleton';
 import { Heart } from 'lucide-react';
 
 export default function Favorites() {
@@ -64,7 +65,13 @@ export default function Favorites() {
                 )}
             </div>
 
-            {loading && <div className="py-10 text-center opacity-70">Loading favorites...</div>}
+            {loading && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {Array.from({ length: 8 }).map((_, idx) => (
+                        <MovieCardSkeleton key={idx} />
+                    ))}
+                </div>
+            )}
             {error && <div className="py-10 text-center text-red-500">{error}</div>}
             {!loading && !error && favorites.length === 0 && (
                 <div className="py-10 text-center opacity-70">

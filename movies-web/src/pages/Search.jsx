@@ -4,6 +4,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { searchMovies } from '@/service/api';
 import { Button } from '@/components/ui/button';
 import MovieCard from '@/components/common/MovieCard';
+import MovieCardSkeleton from '@/components/common/MovieCardSkeleton';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Search() {
@@ -73,7 +74,13 @@ export default function Search() {
                 )}
             </div>
 
-            {loading && <div className="py-10 text-center opacity-70">Loading results...</div>}
+            {loading && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+                    {Array.from({ length: 8 }).map((_, idx) => (
+                        <MovieCardSkeleton key={idx} />
+                    ))}
+                </div>
+            )}
             {error && <div className="py-10 text-center text-red-500">{error}</div>}
             {!loading && !error && !query.trim() && (
                 <div className="py-10 text-center opacity-70">Enter a search term to find movies.</div>
