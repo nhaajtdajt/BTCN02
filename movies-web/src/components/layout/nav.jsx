@@ -1,16 +1,10 @@
-import { Home, Search as SearchIcon, Heart, User, LogOut } from "lucide-react";
+import { Home, Search as SearchIcon } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
-import { useAuth } from '@/context/AuthContext';
-import { useToast } from '@/context/ToastContext';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useState } from 'react';
 
 export default function Nav() {
   const { isDark } = useTheme();
-  const { isAuthenticated, logout, user } = useAuth();
-  const { showToast } = useToast();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [showEmptyWarning, setShowEmptyWarning] = useState(false);
@@ -29,73 +23,15 @@ export default function Nav() {
   return (
     <nav className={`w-[1200px] p-2 mt-1 rounded-xs flex justify-between items-center gap-4 transition-colors ${isDark ? 'bg-[#303873] text-white' : 'bg-[#c5cefa] text-black'
       }`}>
-      {/* Left side - Home + Navigation Links */}
+      {/* Left side - Home */}
       <div className="flex items-center gap-4">
         <Link to="/" className="hover:opacity-70 transition-opacity" title="Home">
           <Home size={20} />
         </Link>
-        <Link
-          to="/favorites"
-          className="flex items-center gap-1 text-sm hover:opacity-70 transition-opacity"
-          title="Favorites"
-        >
-          <Heart size={18} />
-          <span>Favorites</span>
-        </Link>
-        <Link
-          to="/profile"
-          className="flex items-center gap-1 text-sm hover:opacity-70 transition-opacity"
-          title="Profile"
-        >
-          <User size={18} />
-          <span>Profile</span>
-        </Link>
       </div>
 
-      {/* Right side - Search + Auth */}
+      {/* Right side - Search */}
       <div className="flex items-center gap-3">
-        {isAuthenticated ? (
-          <div className="flex items-center gap-2 ml-2">
-            <div className="flex items-center gap-2">
-              <Avatar className="w-8 h-8">
-                <AvatarFallback className={isDark ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'}>
-                  {user?.username?.slice(0, 2).toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-medium">{user?.username}</span>
-            </div>
-            <Button
-              onClick={async () => {
-                await logout();
-                showToast('Logged out successfully', 'success');
-                navigate('/');
-              }}
-              size="sm"
-              variant="outline"
-              className={isDark ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : ''}
-            >
-              <LogOut size={16} className="mr-1" />
-              Logout
-            </Button>
-          </div>
-        ) : (
-          <div className="flex gap-2 ml-2">
-            <Button
-              asChild
-              size="sm"
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Link to="/login">Login</Link>
-            </Button>
-            <Button
-              asChild
-              size="sm"
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              <Link to="/register">Register</Link>
-            </Button>
-          </div>
-        )}
         <div className="relative">
           <form onSubmit={handleSearch} className="flex gap-2">
             <input
