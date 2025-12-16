@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
-import { Film } from 'lucide-react';
+import { Film, Heart } from 'lucide-react';
+import { addFavorite, removeFavorite } from '@/service/api';
 
 /**
  * Reusable MovieCard component for displaying movie information
@@ -18,6 +21,9 @@ import { Film } from 'lucide-react';
 export default function MovieCard({ movie, options = {} }) {
     const navigate = useNavigate();
     const { isDark } = useTheme();
+    const { isAuthenticated } = useAuth();
+    const [isFavorited, setIsFavorited] = useState(false);
+    const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
 
     const {
         showGenres = false,
@@ -33,11 +39,31 @@ export default function MovieCard({ movie, options = {} }) {
         }
     };
 
+    const handleFavoriteToggle = async (e) => {
+        e.stopPropagation();
+        if (!isAuthenticated || isTogglingFavorite) return;
+
+        setIsTogglingFavorite(true);
+        try {
+            if (isFavorited) {
+                await removeFavorite(movie.id);
+                setIsFavorited(false);
+            } else {
+                await addFavorite(movie.id);
+                setIsFavorited(true);
+            }
+        } catch (err) {
+            console.error('Toggle favorite failed:', err);
+        } finally {
+            setIsTogglingFavorite(false);
+        }
+    };
+
     const cardClasses = `cursor-pointer rounded-lg overflow-hidden border transition hover:-translate-y-1 hover:scale-110 transition-transform hover:shadow-lg ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
         }`;
 
     const posterContent = (
-        <AspectRatio ratio={2 / 3} className={`w-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
+        <AspectRatio ratio={2 / 3} className={`w-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} relative`}>
             {movie.image ? (
                 <img
                     src={movie.image}
@@ -56,6 +82,23 @@ export default function MovieCard({ movie, options = {} }) {
             <div className="poster-fallback w-full h-full hidden items-center justify-center text-gray-500">
                 <Film className="w-10 h-10" />
             </div>
+
+            {/* Favorite heart toggle - only show when authenticated */}
+            {isAuthenticated && (
+                <button
+                    onClick={handleFavoriteToggle}
+                    disabled={isTogglingFavorite}
+                    className="absolute top-2 right-2 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-all"
+                    aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                    <Heart
+                        className={`w-5 h-5 transition-all ${isFavorited
+                                ? 'fill-red-500 text-red-500'
+                                : 'text-white'
+                            } ${isTogglingFavorite ? 'opacity-50' : ''}`}
+                    />
+                </button>
+            )}
         </AspectRatio>
     );
 

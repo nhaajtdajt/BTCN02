@@ -275,4 +275,62 @@ export async function getUserProfile() {
   return json;
 }
 
+/**
+ * Add movie to favorites
+ * @param {string} movieId
+ * @returns {Promise<object>}
+ */
+export async function addFavorite(movieId) {
+  const token = getAccessToken();
+  if (!token) {
+    const err = new Error('Missing access token');
+    err.status = 401;
+    throw err;
+  }
+  if (!movieId) throw new Error('movieId is required');
 
+  const res = await fetch(`${backendUrl}/api/users/favorites/${encodeURIComponent(movieId)}`, {
+    method: 'POST',
+    headers: {
+      'x-app-token': appToken,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(json?.message || `Add favorite failed (HTTP ${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
+  return json;
+}
+
+/**
+ * Remove movie from favorites
+ * @param {string} movieId
+ * @returns {Promise<object>}
+ */
+export async function removeFavorite(movieId) {
+  const token = getAccessToken();
+  if (!token) {
+    const err = new Error('Missing access token');
+    err.status = 401;
+    throw err;
+  }
+  if (!movieId) throw new Error('movieId is required');
+
+  const res = await fetch(`${backendUrl}/api/users/favorites/${encodeURIComponent(movieId)}`, {
+    method: 'DELETE',
+    headers: {
+      'x-app-token': appToken,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(json?.message || `Remove favorite failed (HTTP ${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
+  return json;
+}

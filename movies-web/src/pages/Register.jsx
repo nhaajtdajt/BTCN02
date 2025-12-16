@@ -13,7 +13,7 @@ const RegisterSchema = z.object({
     username: z.string().min(3, 'Username must be at least 3 characters'),
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
-    phone: z.string().min(8, 'Phone must be at least 8 digits'),
+    phone: z.string().regex(/^\d{10}$/, 'Phone must be exactly 10 digits'),
     dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'DOB must be in YYYY-MM-DD format'),
 });
 

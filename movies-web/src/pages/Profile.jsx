@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 
 const ProfileSchema = z.object({
     email: z.string().email('Email không hợp lệ'),
-    phone: z.string().optional(),
+    phone: z.string().regex(/^\d{10}$/, 'Số điện thoại phải đúng 10 số'),
     dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Ngày sinh phải dạng YYYY-MM-DD'),
 });
 

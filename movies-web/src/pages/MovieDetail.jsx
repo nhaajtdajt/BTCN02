@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
-import { getMovieDetail, getMovieReviews } from '@/service/api';
+import { useAuth } from '@/context/AuthContext';
+import { getMovieDetail, getMovieReviews, addFavorite, removeFavorite } from '@/service/api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -9,15 +10,18 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import MovieCard from '@/components/common/MovieCard';
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Heart } from 'lucide-react';
 
 export default function MovieDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { isDark } = useTheme();
+    const { isAuthenticated } = useAuth();
     const [movie, setMovie] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isFavorited, setIsFavorited] = useState(false);
+    const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
 
     // Reviews state
     const [reviews, setReviews] = useState([]);
@@ -30,6 +34,25 @@ export default function MovieDetail() {
     // Similar movies pagination state
     const [currentSimilarPage, setCurrentSimilarPage] = useState(1);
     const SIMILAR_MOVIES_PER_PAGE = 8;
+
+    const handleFavoriteToggle = async () => {
+        if (!isAuthenticated || isTogglingFavorite || !movie) return;
+
+        setIsTogglingFavorite(true);
+        try {
+            if (isFavorited) {
+                await removeFavorite(movie.id);
+                setIsFavorited(false);
+            } else {
+                await addFavorite(movie.id);
+                setIsFavorited(true);
+            }
+        } catch (err) {
+            console.error('Toggle favorite failed:', err);
+        } finally {
+            setIsTogglingFavorite(false);
+        }
+    };
 
     useEffect(() => {
         let ignore = false;
@@ -158,6 +181,19 @@ export default function MovieDetail() {
                             style={{ backgroundImage: `url(${movie.image})` }}
                         />
                         <div className={`relative flex gap-6 p-6 rounded-xl border ${sectionBg}`}>
+                            {isAuthenticated && (
+                                <button
+                                    onClick={handleFavoriteToggle}
+                                    disabled={isTogglingFavorite}
+                                    className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-all disabled:opacity-50"
+                                    aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                                >
+                                    <Heart
+                                        className={`w-6 h-6 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : 'text-white'
+                                            }`}
+                                    />
+                                </button>
+                            )}
 
                             <div className="w-[260px] shrink-0">
                                 <AspectRatio ratio={2 / 3} className="rounded-lg overflow-hidden shadow-lg">
