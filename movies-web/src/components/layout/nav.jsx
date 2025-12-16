@@ -58,8 +58,8 @@ export default function Nav() {
               <span className="text-sm font-medium">{user?.username}</span>
             </div>
             <Button
-              onClick={() => {
-                logout();
+              onClick={async () => {
+                await logout();
                 navigate('/');
               }}
               size="sm"

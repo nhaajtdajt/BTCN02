@@ -224,6 +224,27 @@ export async function updateUserProfile(payload) {
 }
 
 /**
+ * Logout user (server-side session/token invalidation)
+ * @returns {Promise<{ message?: string }>}
+ */
+export async function logoutUser() {
+  const res = await fetch(`${backendUrl}/api/users/logout`, {
+    method: 'POST',
+    headers: {
+      'x-app-token': appToken,
+    },
+  });
+
+  if (res.status === 204) return { message: 'Logged out' };
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json?.message || `Logout failed (HTTP ${res.status})`);
+  }
+  return json;
+}
+
+/**
  * Get current user profile
  * @returns {Promise<{id:number,username:string,email:string,phone:string,dob:string,role:string}>}
  */

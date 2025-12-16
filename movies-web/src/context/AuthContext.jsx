@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { logoutUser } from '@/service/api';
 
 const AuthContext = createContext();
 
@@ -31,9 +32,15 @@ export function AuthProvider({ children }) {
         setToken(authToken);
     };
 
-    const logout = () => {
-        setUser(null);
-        setToken(null);
+    const logout = async () => {
+        try {
+            await logoutUser();
+        } catch (err) {
+            console.error('Logout failed', err);
+        } finally {
+            setUser(null);
+            setToken(null);
+        }
     };
 
     return (

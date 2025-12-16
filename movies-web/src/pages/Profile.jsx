@@ -82,7 +82,9 @@ export default function Profile() {
                 <h1 className="text-2xl font-bold">Your Profile</h1>
                 <Button
                     variant="outline"
-                    onClick={logout}
+                    onClick={async () => {
+                        await logout();
+                    }}
                     className={isDark ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : ''}
                 >
                     Logout
