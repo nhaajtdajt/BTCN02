@@ -1,9 +1,118 @@
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext';
+import { loginUser } from '@/service/api';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+
+const LoginSchema = z.object({
+    username: z.string().min(3, 'Username must be at least 3 characters'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
 export default function Login() {
+    const { isDark } = useTheme();
+    const { login } = useAuth();
+    const navigate = useNavigate();
+    const [serverError, setServerError] = useState('');
+
+    const form = useForm({
+        resolver: zodResolver(LoginSchema),
+        defaultValues: {
+            username: '',
+            password: '',
+        },
+        mode: 'onSubmit',
+    });
+
+    async function onSubmit(values) {
+        setServerError('');
+        try {
+            const res = await loginUser(values);
+            // res contains: { message, token, user: {id, username, email} }
+            login(res.user, res.token);
+            // Redirect to home after successful login
+            navigate('/');
+        } catch (err) {
+            setServerError(err?.message || 'Login failed');
+        }
+    }
+
     return (
-        <div className="w-[1200px] p-6 min-h-[600px] flex items-center justify-center">
-            <div className="w-full max-w-md">
-                <h1 className="text-2xl font-bold mb-4">Login</h1>
-                <p className="text-gray-600">Login page - Coming soon...</p>
+        <div className={`w-[1200px] mx-auto p-6 min-h-[600px] flex items-center justify-center ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'}`}>
+            <div className={`w-full max-w-md rounded-xl border p-6 ${isDark ? 'bg-gray-900/70 border-gray-800' : 'bg-white border-gray-200'}`}>
+                <h1 className="text-2xl font-bold mb-1">Welcome back</h1>
+                <p className={`mb-4 text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Login to your account to continue.
+                </p>
+
+                {serverError && (
+                    <div className="mb-3 text-sm text-red-500">{serverError}</div>
+                )}
+
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="username"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Username</FormLabel>
+                                    <FormControl>
+                                        <input
+                                            {...field}
+                                            type="text"
+                                            placeholder="yourname"
+                                            className={`w-full rounded-md border px-3 py-2 ${isDark ? 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-400' : 'bg-white border-gray-300'}`}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Password</FormLabel>
+                                    <FormControl>
+                                        <input
+                                            {...field}
+                                            type="password"
+                                            placeholder="••••••"
+                                            className={`w-full rounded-md border px-3 py-2 ${isDark ? 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-400' : 'bg-white border-gray-300'}`}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="pt-2 flex items-center gap-3">
+                            <Button
+                                type="submit"
+                                disabled={form.formState.isSubmitting}
+                                className={isDark ? 'bg-blue-600 hover:bg-blue-500 text-white' : ''}
+                            >
+                                {form.formState.isSubmitting ? 'Logging in…' : 'Login'}
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                asChild
+                                className={isDark ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : ''}
+                            >
+                                <Link to="/register">Create Account</Link>
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
             </div>
         </div>
     );

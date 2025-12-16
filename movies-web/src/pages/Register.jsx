@@ -41,11 +41,9 @@ export default function Register() {
         setSuccessMsg('');
         try {
             const res = await registerUser(values);
-            setSuccessMsg(res?.message || 'Registered successfully');
-            // Auto-login user after successful registration
-            login({ username: values.username, email: values.email });
-            // Redirect to home after short delay
-            setTimeout(() => navigate('/'), 1200);
+            setSuccessMsg(res?.message || 'Registered successfully! Redirecting to login...');
+            // Redirect to login page after short delay
+            setTimeout(() => navigate('/login'), 1200);
         } catch (err) {
             setServerError(err?.message || 'Registration failed');
         }

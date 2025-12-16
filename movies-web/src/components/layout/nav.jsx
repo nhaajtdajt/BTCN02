@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useState } from 'react';
 
 export default function Nav() {
@@ -48,7 +49,14 @@ export default function Nav() {
       <div className="flex items-center gap-3">
         {isAuthenticated ? (
           <div className="flex items-center gap-2 ml-2">
-            <span className="text-sm opacity-80">Hello, {user?.username}</span>
+            <div className="flex items-center gap-2">
+              <Avatar className="w-8 h-8">
+                <AvatarFallback className={isDark ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'}>
+                  {user?.username?.slice(0, 2).toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium">{user?.username}</span>
+            </div>
             <Button
               onClick={() => {
                 logout();

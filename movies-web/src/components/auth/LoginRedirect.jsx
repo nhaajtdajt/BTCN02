@@ -1,13 +1,15 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import Login from '@/pages/Login';
 
 export default function LoginRedirect() {
     const { isAuthenticated } = useAuth();
 
-    // If already logged in, go to profile; otherwise go to register
+    // If already logged in, go to home
     if (isAuthenticated) {
-        return <Navigate to="/profile" replace />;
+        return <Navigate to="/" replace />;
     }
 
-    return <Navigate to="/register" replace />;
+    // Otherwise show login page
+    return <Login />;
 }
