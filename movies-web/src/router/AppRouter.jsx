@@ -8,7 +8,7 @@ import LoginRedirect from '@/components/auth/LoginRedirect';
 import Register from '@/pages/Register';
 import Profile from '@/pages/Profile';
 import Favorites from '@/pages/Favorites';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import ProtectedAuth from '@/context/ProtectedAuth';
 
 export const router = createBrowserRouter([
     {
@@ -42,17 +42,17 @@ export const router = createBrowserRouter([
             {
                 path: 'profile',
                 element: (
-                    <ProtectedRoute>
+                    <ProtectedAuth>
                         <Profile />
-                    </ProtectedRoute>
+                    </ProtectedAuth>
                 ),
             },
             {
                 path: 'favorites',
                 element: (
-                    <ProtectedRoute>
+                    <ProtectedAuth>
                         <Favorites />
-                    </ProtectedRoute>
+                    </ProtectedAuth>
                 ),
             },
         ],
