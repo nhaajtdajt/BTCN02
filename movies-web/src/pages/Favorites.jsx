@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { getFavorites, getMovieDetail } from '@/service/api';
 import MovieCard from '@/components/common/MovieCard';
 import MovieCardSkeleton from '@/components/common/MovieCardSkeleton';
-import { Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Favorites() {
     const { isDark } = useTheme();
@@ -12,6 +13,8 @@ export default function Favorites() {
     const [favorites, setFavorites] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 12;
 
     useEffect(() => {
         let ignore = false;
@@ -48,6 +51,31 @@ export default function Favorites() {
         return () => { ignore = true; };
     }, [isAuthenticated]);
 
+    // Pagination logic
+    const totalPages = useMemo(() => {
+        return Math.ceil(favorites.length / ITEMS_PER_PAGE);
+    }, [favorites.length]);
+
+    const paginatedFavorites = useMemo(() => {
+        const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIdx = startIdx + ITEMS_PER_PAGE;
+        return favorites.slice(startIdx, endIdx);
+    }, [favorites, currentPage]);
+
+    const handleNext = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage((prev) => prev + 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    const handlePrev = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prev) => prev - 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className={`w-[1200px] mx-auto p-6 min-h-[600px] transition-colors ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'}`}>
             <div className="mb-6">
@@ -61,6 +89,7 @@ export default function Favorites() {
                 {favorites.length > 0 && (
                     <p className="text-xs opacity-60 mt-1">
                         {favorites.length} movie{favorites.length !== 1 ? 's' : ''} saved
+                        {totalPages > 1 && ` • Page ${currentPage} of ${totalPages}`}
                     </p>
                 )}
             </div>
@@ -82,14 +111,43 @@ export default function Favorites() {
             )}
 
             {!loading && !error && favorites.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {favorites.map((movie) => (
-                        <MovieCard
-                            key={movie.id}
-                            movie={movie}
-                            options={{ showGenres: true, showRate: true }}
-                        />
-                    ))}
+                <div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+                        {paginatedFavorites.map((movie) => (
+                            <MovieCard
+                                key={movie.id}
+                                movie={movie}
+                                options={{ showGenres: true, showRate: true }}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Pagination Controls - Always visible */}
+                    <div className="flex justify-center items-center gap-4 py-4">
+                        <Button
+                            onClick={handlePrev}
+                            disabled={currentPage === 1}
+                            variant="outline"
+                            size="sm"
+                            className={isDark ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : ''}
+                        >
+                            <ChevronLeft size={18} />
+                            Previous
+                        </Button>
+
+                        <span className="text-sm opacity-80">Page {currentPage} of {totalPages}</span>
+
+                        <Button
+                            onClick={handleNext}
+                            disabled={currentPage >= totalPages}
+                            variant="outline"
+                            size="sm"
+                            className={isDark ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : ''}
+                        >
+                            Next
+                            <ChevronRight size={18} />
+                        </Button>
+                    </div>
                 </div>
             )}
         </div>
