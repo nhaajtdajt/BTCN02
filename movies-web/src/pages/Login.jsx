@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { loginUser } from '@/service/api';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ export default function Login() {
     const { isDark } = useTheme();
     const { login } = useAuth();
     const navigate = useNavigate();
+    const { showToast } = useToast();
     const [serverError, setServerError] = useState('');
 
     const form = useForm({
@@ -37,8 +39,10 @@ export default function Login() {
             await login(res.user, res.token);
             // Redirect to home after successful login
             navigate('/');
+            showToast('Login successful', 'success');
         } catch (err) {
             setServerError(err?.message || 'Login failed');
+            showToast(err?.message || 'Login failed', 'error');
         }
     }
 

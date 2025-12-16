@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { registerUser } from '@/service/api';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,7 @@ const RegisterSchema = z.object({
 export default function Register() {
     const { isDark } = useTheme();
     const { login } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
@@ -42,10 +44,12 @@ export default function Register() {
         try {
             const res = await registerUser(values);
             setSuccessMsg(res?.message || 'Registered successfully! Redirecting to login...');
+            showToast('Register successful', 'success');
             // Redirect to login page after short delay
             setTimeout(() => navigate('/login'), 1200);
         } catch (err) {
             setServerError(err?.message || 'Registration failed');
+            showToast(err?.message || 'Registration failed', 'error');
         }
     }
 

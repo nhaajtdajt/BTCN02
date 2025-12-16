@@ -2,6 +2,7 @@ import { Home, Search as SearchIcon, Heart, User, LogOut } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useState } from 'react';
@@ -9,6 +10,7 @@ import { useState } from 'react';
 export default function Nav() {
   const { isDark } = useTheme();
   const { isAuthenticated, logout, user } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [showEmptyWarning, setShowEmptyWarning] = useState(false);
@@ -65,6 +67,7 @@ export default function Nav() {
             <Button
               onClick={async () => {
                 await logout();
+                showToast('Logged out successfully', 'success');
                 navigate('/');
               }}
               size="sm"

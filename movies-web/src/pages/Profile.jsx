@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getUserProfile, updateUserProfile } from '@/service/api';
 import { useTheme } from '@/context/ThemeContext';
+import { useToast } from '@/context/ToastContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ const ProfileSchema = z.object({
 export default function Profile() {
     const { isDark } = useTheme();
     const { logout } = useAuth();
+    const { showToast } = useToast();
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -84,6 +86,7 @@ export default function Profile() {
                     variant="outline"
                     onClick={async () => {
                         await logout();
+                        showToast('Logged out successfully', 'success');
                     }}
                     className={isDark ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : ''}
                 >
