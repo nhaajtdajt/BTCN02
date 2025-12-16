@@ -1,11 +1,13 @@
-import { Home, Search as SearchIcon, Heart, User } from "lucide-react";
+import { Home, Search as SearchIcon, Heart, User, LogOut } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 
 export default function Nav() {
   const { isDark } = useTheme();
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -44,24 +46,40 @@ export default function Nav() {
 
       {/* Right side - Search + Auth */}
       <div className="flex items-center gap-3">
-
-
-        <div className="flex gap-2 ml-2">
-          <Button
-            asChild
-            size="sm"
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Link to="/login">Login</Link>
-          </Button>
-          <Button
-            asChild
-            size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
-          >
-            <Link to="/register">Register</Link>
-          </Button>
-        </div>
+        {isAuthenticated ? (
+          <div className="flex items-center gap-2 ml-2">
+            <span className="text-sm opacity-80">Hello, {user?.username}</span>
+            <Button
+              onClick={() => {
+                logout();
+                navigate('/');
+              }}
+              size="sm"
+              variant="outline"
+              className={isDark ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : ''}
+            >
+              <LogOut size={16} className="mr-1" />
+              Logout
+            </Button>
+          </div>
+        ) : (
+          <div className="flex gap-2 ml-2">
+            <Button
+              asChild
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Link to="/login">Login</Link>
+            </Button>
+            <Button
+              asChild
+              size="sm"
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Link to="/register">Register</Link>
+            </Button>
+          </div>
+        )}
         <form onSubmit={handleSearch} className="flex gap-2">
           <input
             type="search"

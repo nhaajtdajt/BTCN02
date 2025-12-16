@@ -138,3 +138,50 @@ export async function getMovieReviews(movieId, page = 1, limit = 12, sort = 'new
 
   return response.json();
 }
+
+
+/**
+ * Register a new user
+ * @param {{username:string,email:string,password:string,phone:string,dob:string}} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function registerUser(payload) {
+  const res = await fetch(`${backendUrl}/api/users/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-app-token': appToken,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json?.message || `Register failed (HTTP ${res.status})`);
+  }
+  return json;
+}
+
+
+/**
+ * Login user
+ * @param {{username:string,password:string}} payload
+ * @returns {Promise<{ token: string, user: object, message?: string }>}
+ */
+
+export async function loginUser(payload) {
+  const res = await fetch(`${backendUrl}/api/users/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-app-token': appToken,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(json?.message || `Login failed (HTTP ${res.status})`);
+  }
+  return json;
+}

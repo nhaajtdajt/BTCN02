@@ -4,10 +4,11 @@ import Home from '@/pages/home';
 import Search from '@/pages/Search';
 import MovieDetail from '@/pages/MovieDetail';
 import Person from '@/pages/Person';
-import Login from '@/pages/Login';
+import LoginRedirect from '@/components/auth/LoginRedirect';
 import Register from '@/pages/Register';
 import Profile from '@/pages/Profile';
 import Favorites from '@/pages/Favorites';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 export const router = createBrowserRouter([
     {
@@ -32,7 +33,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'login',
-                element: <Login />,
+                element: <LoginRedirect />,
             },
             {
                 path: 'register',
@@ -40,11 +41,19 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'profile',
-                element: <Profile />,
+                element: (
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: 'favorites',
-                element: <Favorites />,
+                element: (
+                    <ProtectedRoute>
+                        <Favorites />
+                    </ProtectedRoute>
+                ),
             },
         ],
     },
