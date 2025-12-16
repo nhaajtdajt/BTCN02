@@ -191,6 +191,39 @@ export async function loginUser(payload) {
 }
 
 /**
+ * Update current user profile
+ * @param {{email:string,phone?:string,dob:string}} payload
+ * @returns {Promise<{id:number,username:string,email:string,phone:string,dob:string,role:string}>}
+ */
+export async function updateUserProfile(payload) {
+  const token = getAccessToken();
+  if (!token) {
+    const err = new Error('Missing access token');
+    err.status = 401;
+    throw err;
+  }
+
+  const res = await fetch(`${backendUrl}/api/users/profile`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-app-token': appToken,
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(json?.message || `Profile update failed (HTTP ${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
+
+  return json;
+}
+
+/**
  * Get current user profile
  * @returns {Promise<{id:number,username:string,email:string,phone:string,dob:string,role:string}>}
  */
