@@ -34,7 +34,7 @@ export default function Login() {
         try {
             const res = await loginUser(values);
             // res contains: { message, token, user: {id, username, email} }
-            login(res.user, res.token);
+            await login(res.user, res.token);
             // Redirect to home after successful login
             navigate('/');
         } catch (err) {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
@@ -21,9 +21,14 @@ import { addFavorite, removeFavorite } from '@/service/api';
 export default function MovieCard({ movie, options = {} }) {
     const navigate = useNavigate();
     const { isDark } = useTheme();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, favoriteIds, addToFavorites, removeFromFavorites } = useAuth();
     const [isFavorited, setIsFavorited] = useState(false);
     const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
+
+    // Sync favorite state from context
+    useEffect(() => {
+        setIsFavorited(favoriteIds.includes(movie.id));
+    }, [favoriteIds, movie.id]);
 
     const {
         showGenres = false,
@@ -47,10 +52,10 @@ export default function MovieCard({ movie, options = {} }) {
         try {
             if (isFavorited) {
                 await removeFavorite(movie.id);
-                setIsFavorited(false);
+                removeFromFavorites(movie.id);
             } else {
                 await addFavorite(movie.id);
-                setIsFavorited(true);
+                addToFavorites(movie.id);
             }
         } catch (err) {
             console.error('Toggle favorite failed:', err);
@@ -93,8 +98,8 @@ export default function MovieCard({ movie, options = {} }) {
                 >
                     <Heart
                         className={`w-5 h-5 transition-all ${isFavorited
-                                ? 'fill-red-500 text-red-500'
-                                : 'text-white'
+                            ? 'fill-red-500 text-red-500'
+                            : 'text-white'
                             } ${isTogglingFavorite ? 'opacity-50' : ''}`}
                     />
                 </button>

@@ -334,3 +334,36 @@ export async function removeFavorite(movieId) {
   }
   return json;
 }
+
+/**
+ * Get user's favorite movies
+ * @returns {Promise<Array<{id:string,title:string,year:number,image:string,rate:number,short_description:string,genres:string[]}>>}
+ */
+export async function getFavorites() {
+  const token = getAccessToken();
+  if (!token) {
+    const err = new Error('Missing access token');
+    err.status = 401;
+    throw err;
+  }
+
+  const res = await fetch(`${backendUrl}/api/users/favorites`, {
+    method: 'GET',
+    headers: {
+      'x-app-token': appToken,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(json?.message || `Favorites fetch failed (HTTP ${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
+  const arr = Array.isArray(json)
+    ? json
+    : (Array.isArray(json?.data)
+      ? json.data
+      : (Array.isArray(json?.favorites) ? json.favorites : []));
+  return arr;
+}

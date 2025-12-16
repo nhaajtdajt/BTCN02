@@ -16,12 +16,19 @@ export default function MovieDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { isDark } = useTheme();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, favoriteIds, addToFavorites, removeFromFavorites } = useAuth();
     const [movie, setMovie] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isFavorited, setIsFavorited] = useState(false);
     const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
+
+    // Sync favorite state from context
+    useEffect(() => {
+        if (movie?.id) {
+            setIsFavorited(favoriteIds.includes(movie.id));
+        }
+    }, [favoriteIds, movie?.id]);
 
     // Reviews state
     const [reviews, setReviews] = useState([]);
@@ -42,10 +49,10 @@ export default function MovieDetail() {
         try {
             if (isFavorited) {
                 await removeFavorite(movie.id);
-                setIsFavorited(false);
+                removeFromFavorites(movie.id);
             } else {
                 await addFavorite(movie.id);
-                setIsFavorited(true);
+                addToFavorites(movie.id);
             }
         } catch (err) {
             console.error('Toggle favorite failed:', err);
